@@ -22,6 +22,7 @@
             --primary-blue-dark: #082840;
             --primary-blue-light: #1a5a8a;
             --accent-gold: #d4a574;
+            --accent-gold-light: #e8c8a0;
             --text-dark: #1a1a1a;
             --text-light: #ffffff;
             --bg-light: #f8f9fa;
@@ -29,6 +30,10 @@
             --border-color: #e0e0e0;
             --success-green: #2d5a3c;
             --transition-speed: 0.3s;
+            --shadow-sm: 0 2px 8px rgba(12, 60, 96, 0.08);
+            --shadow-md: 0 4px 16px rgba(12, 60, 96, 0.12);
+            --shadow-lg: 0 8px 32px rgba(12, 60, 96, 0.16);
+            --shadow-xl: 0 12px 48px rgba(12, 60, 96, 0.2);
         }
 
         /* Reset and Base Styles */
@@ -38,11 +43,88 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
             color: var(--text-dark);
             background-color: var(--bg-white);
+            overflow-x: hidden;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         /* Accessibility */
@@ -64,11 +146,18 @@
 
         /* Header and Navigation */
         .header {
-            background-color: var(--bg-white);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+            box-shadow: var(--shadow-sm);
             position: sticky;
             top: 0;
             z-index: 1000;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .header.scrolled {
+            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.95);
         }
 
         .header-container {
@@ -88,25 +177,56 @@
             gap: 0.75rem;
             text-decoration: none;
             color: var(--primary-blue);
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: translateY(-2px);
         }
 
         .logo-img {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
-            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light), var(--accent-gold));
+            background-size: 200% 200%;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-light);
             font-size: 1.5rem;
             font-weight: bold;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-img::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        .logo:hover .logo-img {
+            background-position: 100% 100%;
+            transform: rotate(-5deg) scale(1.05);
+            box-shadow: var(--shadow-lg);
         }
 
         .logo-text {
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--primary-blue);
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .nav-wrapper {
@@ -191,10 +311,22 @@
             background-color: var(--bg-light);
         }
 
+        .carousel::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 150px;
+            background: linear-gradient(to top, var(--bg-white), transparent);
+            pointer-events: none;
+            z-index: 1;
+        }
+
         .carousel-container {
             display: flex;
             height: 100%;
-            transition: transform 0.5s ease-in-out;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .carousel-slide {
@@ -206,11 +338,24 @@
             justify-content: center;
         }
 
+        .carousel-slide::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, transparent 0%, rgba(12, 60, 96, 0.4) 100%);
+            z-index: 1;
+        }
+
         .carousel-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: brightness(0.7);
+            filter: brightness(0.65);
+            transition: transform 1s ease;
+        }
+
+        .carousel-slide:hover .carousel-image {
+            transform: scale(1.05);
         }
 
         .carousel-content {
@@ -219,39 +364,64 @@
             color: var(--text-light);
             max-width: 800px;
             padding: 2rem;
+            z-index: 2;
+            animation: fadeInUp 1s ease;
         }
 
         .carousel-content h1 {
             font-size: 3rem;
             margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.6);
+            font-weight: 800;
+            letter-spacing: -0.5px;
         }
 
         .carousel-content p {
             font-size: 1.5rem;
             margin-bottom: 2rem;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.6);
+            font-weight: 300;
         }
 
         .carousel-btn {
-            background-color: var(--accent-gold);
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
             color: var(--text-dark);
-            padding: 1rem 2.5rem;
+            padding: 1.2rem 3rem;
             border: none;
-            border-radius: 8px;
+            border-radius: 50px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all var(--transition-speed);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             display: inline-block;
+            box-shadow: 0 4px 20px rgba(212, 165, 116, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carousel-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .carousel-btn:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .carousel-btn:hover,
         .carousel-btn:focus {
-            background-color: #c49564;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 8px 32px rgba(212, 165, 116, 0.6);
         }
 
         .carousel-controls {
@@ -322,6 +492,20 @@
             color: var(--primary-blue);
             text-align: center;
             margin-bottom: 1rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+            border-radius: 2px;
         }
 
         .section-subtitle {
@@ -332,12 +516,25 @@
             max-width: 700px;
             margin-left: auto;
             margin-right: auto;
+            line-height: 1.8;
         }
 
         /* Vision & Mission Section */
         .vision-mission {
-            background-color: var(--bg-light);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e8eef3 100%);
             padding: 4rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vision-mission::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
         }
 
         .vision-mission-grid {
@@ -349,16 +546,37 @@
         }
 
         .vision-mission-card {
-            background-color: var(--bg-white);
+            background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
             padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(12, 60, 96, 0.1);
+        }
+
+        .vision-mission-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--accent-gold));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .vision-mission-card:hover::before {
+            transform: scaleX(1);
         }
 
         .vision-mission-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--accent-gold);
         }
 
         .vision-mission-card h3 {
@@ -371,7 +589,18 @@
         }
 
         .vision-mission-card .icon {
-            font-size: 2rem;
+            font-size: 2.5rem;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .vision-mission-card:nth-child(2) .icon {
+            animation-delay: 0.5s;
+        }
+
+        .vision-mission-card:nth-child(3) .icon {
+            animation-delay: 1s;
         }
 
         .vision-mission-card p {
@@ -382,9 +611,22 @@
 
         /* College Admissions Section */
         .admissions {
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-light) 100%);
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-light) 50%, var(--primary-blue-dark) 100%);
             color: var(--text-light);
             padding: 4rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admissions::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -50%;
+            width: 200%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 50%, rgba(212, 165, 116, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
         }
 
         .admissions .section-title {
@@ -404,18 +646,40 @@
         }
 
         .admissions-stat {
-            background-color: rgba(255, 255, 255, 0.1);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
             backdrop-filter: blur(10px);
-            padding: 2rem;
-            border-radius: 12px;
+            padding: 2.5rem;
+            border-radius: 16px;
             text-align: center;
             border: 2px solid rgba(255, 255, 255, 0.2);
-            transition: transform var(--transition-speed);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admissions-stat::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.3), transparent);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .admissions-stat:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .admissions-stat:hover {
-            transform: translateY(-5px);
-            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-8px) scale(1.05);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+            border-color: var(--accent-gold);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
         }
 
         .admissions-stat-number {
@@ -423,6 +687,9 @@
             font-weight: 700;
             color: var(--accent-gold);
             margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .admissions-stat-label {
@@ -495,8 +762,19 @@
 
         /* Testimonials Section */
         .testimonials {
-            background-color: var(--bg-light);
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
             padding: 4rem 2rem;
+            position: relative;
+        }
+
+        .testimonials::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
         }
 
         .testimonials-grid {
@@ -508,28 +786,58 @@
         }
 
         .testimonial-card {
-            background-color: var(--bg-white);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
             position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(12, 60, 96, 0.08);
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--accent-gold);
+        }
+
+        .testimonial-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            background: linear-gradient(135deg, transparent, rgba(212, 165, 116, 0.05));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .testimonial-card:hover::after {
+            opacity: 1;
         }
 
         .testimonial-quote {
-            font-size: 3rem;
+            font-size: 4rem;
             color: var(--accent-gold);
             position: absolute;
-            top: 1rem;
+            top: 0.5rem;
             left: 1.5rem;
             line-height: 1;
+            opacity: 0.5;
+            font-family: Georgia, serif;
         }
 
         .testimonial-text {
-            margin-top: 2rem;
+            margin-top: 2.5rem;
             margin-bottom: 1.5rem;
             font-style: italic;
             color: var(--text-dark);
-            line-height: 1.8;
+            line-height: 1.9;
+            position: relative;
+            z-index: 1;
         }
 
         .testimonial-author {
@@ -539,19 +847,29 @@
             margin-top: 1.5rem;
             padding-top: 1.5rem;
             border-top: 2px solid var(--border-color);
+            position: relative;
+            z-index: 1;
         }
 
         .testimonial-avatar {
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light), var(--accent-gold));
+            background-size: 200% 200%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-light);
             font-size: 1.5rem;
             font-weight: 700;
+            box-shadow: 0 4px 12px rgba(12, 60, 96, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover .testimonial-avatar {
+            background-position: 100% 100%;
+            transform: scale(1.1);
         }
 
         .testimonial-info h4 {
@@ -1054,6 +1372,109 @@
             } else if (e.key === 'ArrowRight') {
                 nextSlide();
             }
+        });
+
+        // Scroll Animation Observer
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                }
+            });
+        }, observerOptions);
+
+        // Add animate-on-scroll class to elements and observe them
+        document.addEventListener('DOMContentLoaded', () => {
+            const animateElements = document.querySelectorAll('.vision-mission-card, .admissions-stat, .calendar-event, .testimonial-card, .section-title, .section-subtitle');
+
+            animateElements.forEach((el, index) => {
+                el.classList.add('animate-on-scroll');
+                el.style.transitionDelay = `${index * 0.1}s`;
+                observer.observe(el);
+            });
+        });
+
+        // Header scroll effect
+        const header = document.querySelector('.header');
+        let lastScroll = 0;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+
+            if (currentScroll > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+
+            lastScroll = currentScroll;
+        });
+
+        // Parallax effect for carousel
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const carouselImages = document.querySelectorAll('.carousel-image');
+            carouselImages.forEach(img => {
+                if (scrolled < 600) {
+                    img.style.transform = `translateY(${scrolled * 0.5}px) scale(${1 + scrolled * 0.0002})`;
+                }
+            });
+        });
+
+        // Counter animation for admissions stats
+        function animateCounter(element, target, duration = 2000) {
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    if (target.toString().includes('%')) {
+                        element.textContent = Math.floor(current) + '%';
+                    } else if (target.toString().includes('M')) {
+                        element.textContent = '$' + (current / 1000000).toFixed(1) + 'M';
+                    } else {
+                        element.textContent = Math.floor(current);
+                    }
+                }
+            }, 16);
+        }
+
+        // Observe admission stats for counter animation
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.dataset.animated) {
+                    const numberEl = entry.target.querySelector('.admissions-stat-number');
+                    const text = numberEl.textContent;
+                    entry.target.dataset.animated = 'true';
+
+                    if (text.includes('%')) {
+                        const num = parseInt(text);
+                        numberEl.textContent = '0%';
+                        animateCounter(numberEl, num + '%', 2000);
+                    } else if (text.includes('M')) {
+                        numberEl.textContent = '$0M';
+                        animateCounter(numberEl, '2.5M', 2000);
+                    } else {
+                        const num = parseInt(text);
+                        numberEl.textContent = '0';
+                        setTimeout(() => animateCounter(numberEl, num, 2000), 200);
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.admissions-stat').forEach(stat => {
+            statsObserver.observe(stat);
         });
     </script>
 </body>
