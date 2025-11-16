@@ -1,0 +1,33 @@
+# Images (you'll upload your own)
+images/*.jpg
+images/*.jpeg
+images/*.png
+images/*.gif
+images/*.svg
+images/carousel/*
+images/gallery/*
+images/logos/*
+
+# Keep the folder structure
+!images/.gitkeep
+!images/carousel/.gitkeep
+!images/gallery/.gitkeep
+!images/logos/.gitkeep
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*~
+
+# Node modules (if you add build tools later)
+node_modules/
